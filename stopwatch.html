@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillCraft Stopwatch</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #111827;
+      color: #f9fafb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #1f2937;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #60a5fa;
+    }
+
+    #time {
+      font-size: 40px;
+      margin-bottom: 20px;
+    }
+
+    .buttons button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      background-color: #3b82f6;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .buttons button:hover {
+      background-color: #2563eb;
+    }
+
+    .buttons button:disabled {
+      background-color: #6b7280;
+      cursor: not-allowed;
+    }
+
+    .laps {
+      margin-top: 20px;
+      text-align: left;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .lap {
+      background: #374151;
+      padding: 8px 12px;
+      border-radius: 5px;
+      margin-bottom: 5px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Stopwatch Web Application</h1>
+    <div id="time">00:00:00.000</div>
+    <div class="buttons">
+      <button onclick="start()">Start</button>
+      <button onclick="pause()">Pause</button>
+      <button onclick="reset()">Reset</button>
+      <button onclick="lap()">Lap</button>
+    </div>
+    <div class="laps" id="laps"></div>
+  </div>
+
+  <script>
+    let startTime = 0;
+    let elapsedTime = 0;
+    let interval;
+    let lapTimes = [];
+
+    function formatTime(ms) {
+      const date = new Date(ms);
+      const hrs = String(date.getUTCHours()).padStart(2, '0');
+      const mins = String(date.getUTCMinutes()).padStart(2, '0');
+      const secs = String(date.getUTCSeconds()).padStart(2, '0');
+      const millis = String(ms % 1000).padStart(3, '0');
+      return `${hrs}:${mins}:${secs}.${millis}`;
+    }
+
+    function updateDisplay() {
+      const timeElement = document.getElementById('time');
+      timeElement.textContent = formatTime(elapsedTime);
+    }
+
+    function start() {
+      startTime = Date.now() - elapsedTime;
+      interval = setInterval(() => {
+        elapsedTime = Date.now() - startTime;
+        updateDisplay();
+      }, 10);
+    }
+
+    function pause() {
+      clearInterval(interval);
+    }
+
+    function reset() {
+      clearInterval(interval);
+      elapsedTime = 0;
+      updateDisplay();
+      document.getElementById('laps').innerHTML = '';
+      lapTimes = [];
+    }
+
+    function lap() {
+      const lapTime = elapsedTime;
+      const lapList = document.getElementById('laps');
+      const lapElement = document.createElement('div');
+      lapElement.classList.add('lap');
+      lapElement.textContent = `Lap ${lapTimes.length + 1}: ${formatTime(lapTime)}`;
+      lapList.prepend(lapElement);
+      lapTimes.push(lapTime);
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>
